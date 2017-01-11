@@ -11,3 +11,8 @@ class StockInventory(models.Model):
 
     cycle_count_id = fields.Many2one(comodel_name='stock.cycle.count',
                                      string='Stock Cycle Count')
+
+    @api.multi
+    def action_done(self):
+        self.cycle_count_id.state = 'done'
+        return super(StockInventory, self).action_done()

@@ -4,23 +4,22 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
 from openerp import api, fields, models
-from datetime import timedelta, datetime
 
 
 class StockCycleCount(models.Model):
     _name = 'stock.cycle.count'
 
     @api.one
-    def _get_name(self):
-        self.name = 'CC/{}/{}'.format(self.location_id.name,
-                                      self.cycle_count_rule_id.name)
-
-    @api.one
     def _count_inventory_adj(self):
         self.inventory_adj_count = len(self.stock_adjustment_ids)
 
-    name = fields.Char(string='Name',
-                       compute=_get_name)
+    @api.model
+    def create(self, vals):
+        vals['name'] = self.env['ir.sequence'].next_by_code(
+            'stock.cycle.count') or ''
+        return super(StockCycleCount, self).create(vals)
+
+    name = fields.Char(string='Name', readonly=True)
     location_id = fields.Many2one(comodel_name='stock.location',
                                   string='Location',
                                   required=True)
@@ -48,7 +47,7 @@ class StockCycleCount(models.Model):
     @api.model
     def _prepare_inventory_adjustment(self):
         return {
-            'name': self.name,
+            'name': 'INV/{}'.format(self.name),
             'cycle_count_id': self.id,
             'location_id': self.location_id.id
         }
