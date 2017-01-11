@@ -8,7 +8,6 @@ from datetime import timedelta, datetime
 
 
 class StockCycleCount(models.Model):
-
     _name = 'stock.cycle.count'
 
     @api.one
@@ -17,41 +16,11 @@ class StockCycleCount(models.Model):
                                       self.cycle_count_rule_id.name)
 
     @api.one
-    def do_cancel(self):
-        self.state = 'cancelled'
-
-    @api.one
-    def _prepare_inventory_adjustment(self):
-        return {
-            'name': '{} inventory ({})'.format(self.location_id.name,
-                                               self.name),
-            'cycle_count_id': self.id,
-            'location_id': self.location_id.id
-        }
-
-    @api.one
-    def action_create_inventory_adjustment(self):
-        self.env['stock.inventory'].create(
-            self._prepare_inventory_adjustment(self))
-        self.state = 'open'
-        return True
-
-    @api.one
-    def action_view_inventory(self):
-        domain = []
-        return {
-            'name': 'Associated Inventory Adjustment',
-            'domain': domain,
-            'res_model': 'stock.inventory',
-            'type': 'ir.actions.act_window',
-            'view_id': False,
-            'view_mode': 'tree,form',
-            'view_type': 'tree',
-        }
+    def _count_inventory_adj(self):
+        self.inventory_adj_count = len(self.stock_adjustment_ids)
 
     name = fields.Char(string='Name',
                        compute=_get_name)
-    # TODO: compute name.
     location_id = fields.Many2one(comodel_name='stock.location',
                                   string='Location',
                                   required=True)
@@ -70,3 +39,39 @@ class StockCycleCount(models.Model):
     stock_adjustment_ids = fields.One2many(comodel_name='stock.inventory',
                                            inverse_name='cycle_count_id',
                                            string='Inventory Adjustment')
+    inventory_adj_count = fields.Integer(compute=_count_inventory_adj)
+
+    @api.one
+    def do_cancel(self):
+        self.state = 'cancelled'
+
+    @api.model
+    def _prepare_inventory_adjustment(self):
+        return {
+            'name': self.name,
+            'cycle_count_id': self.id,
+            'location_id': self.location_id.id
+        }
+
+    @api.one
+    def action_create_inventory_adjustment(self):
+        data = self._prepare_inventory_adjustment()
+        self.env['stock.inventory'].create(data)
+        self.state = 'open'
+        return True
+
+    @api.multi
+    def action_view_inventory(self):
+        action = self.env.ref('stock.action_inventory_form')
+        result = action.read()[0]
+        result['context'] = {}
+        adjustment_ids = sum([cycle_count.stock_adjustment_ids.ids
+                              for cycle_count in self], [])
+        if len(adjustment_ids) > 1:
+            result['domain'] = \
+                "[('id','in',[" + ','.join(map(str, adjustment_ids)) + "])]"
+        elif len(adjustment_ids) == 1:
+            res = self.env.ref('stock.view_inventory_form', False)
+            result['views'] = [(res and res.id or False, 'form')]
+            result['res_id'] = adjustment_ids and adjustment_ids[0] or False
+        return result

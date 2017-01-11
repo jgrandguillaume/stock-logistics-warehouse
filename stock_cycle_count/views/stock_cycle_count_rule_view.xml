@@ -27,15 +27,19 @@
                             <field name="name"/>
                             <field name="rule_type"/>
                         </group>
-                        <group>
-                            <field name="periodic_qty_per_period"/>
-                            <field name="periodic_count_period"/>
-                            <field name="debugging_field"/>
+                        <group name="specific rule fields">
+                            <field name="periodic_qty_per_period"
+                                   attrs="{'invisible': [('rule_type', '!=', 'periodic')]}"/>
+                            <field name="periodic_count_period"
+                                   attrs="{'invisible': [('rule_type', '!=', 'periodic')]}"/>
                         </group>
                     </group>
-                    <group name="bottom">
-                        <field name="warehouse_ids">Applied in</field>
-                    </group>
+
+                    <notebook>
+                        <page string="Applied in">
+                            <field name="warehouse_ids"/>
+                        </page>
+                    </notebook>
                 </sheet>
 
             </form>
@@ -49,7 +53,8 @@
                 view_mode="tree,form" />
 
     <menuitem id="menu_stock_cycle_count_rule"
-              name="Cycle Count Rules" parent="menu_stock_cycle_count_parent"
+              name="Cycle Count Rules"
+              parent="stock.menu_stock_config_settings"
               action="action_stock_cycle_count_rules" />
 
 </odoo>

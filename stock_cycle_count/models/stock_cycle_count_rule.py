@@ -15,9 +15,6 @@ class StockCycleCountRule(models.Model):
         return [
             ('periodic', _('Periodic'))]
 
-    def _compute_debugging_field(self):
-        self.debugging_field = 'hola'
-
     def compute_rule(self, locs):
         if self.rule_type == 'periodic':
             proposed_cycle_counts = self._compute_rule_periodic(locs)
@@ -68,4 +65,3 @@ class StockCycleCountRule(models.Model):
                                      column1='rule_id',
                                      column2='warehouse_id',
                                      string='Applied in')
-    debugging_field = fields.Char('testing', compute=_compute_debugging_field)

@@ -10,9 +10,8 @@
         <field name="arch" type="xml">
             <notebook position="before">
                 <button name="action_compute_cycle_count_rules" type="object"
-                    string="compute cycle count rule" class="oe_highlight"/>
+                    string="Compute cycle count rule" class="oe_highlight"/>
                 <group>
-                    <field name="test_field"/>
                     <field name="cycle_count_rule_ids">Cycle count
                         rules</field>
                 </group>

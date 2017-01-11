@@ -6,16 +6,6 @@
 from openerp import api, fields, models
 
 
-class StockLocation(models.Model): #osv.osv ??
-    _inherit = 'stock.location'
-
-    qty_variance_inventory_threshold = fields.Float('Acceptable Inventory '
-                                                    'Quantity Variance '
-                                                    'Threshold')
-    last_inventory_adjustment = fields.Datetime('Last Inventory Adjustment')
-    # TODO: add and define fields.
-
-
 class StockWarehouse(models.Model): #osv.osv ??
     _inherit = 'stock.warehouse'
 
@@ -26,8 +16,6 @@ class StockWarehouse(models.Model): #osv.osv ??
         column1='warehouse_id',
         column2='rule_id',
         string='Cycle Count Rules')
-
-    test_field = fields.Char('Testing')
 
     @api.model
     def _get_cycle_count_locations_search_domain(self, wh):
@@ -93,10 +81,3 @@ class StockWarehouse(models.Model): #osv.osv ??
                             'rule_type'].id,
                         'state': 'draft'
                     })
-
-
-class StockInventory(models.Model):
-    _inherit = 'stock.inventory'
-
-    cycle_count_id = fields.Many2one(comodel_name='stock.cycle.count',
-                                     string='Stock Cycle Count')
