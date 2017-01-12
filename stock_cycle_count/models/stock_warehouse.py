@@ -4,9 +4,10 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
 from openerp import api, fields, models
+from datetime import datetime
 
 
-class StockWarehouse(models.Model): #osv.osv ??
+class StockWarehouse(models.Model):
     _inherit = 'stock.warehouse'
 
     cycle_count_rule_ids = fields.Many2many(
@@ -16,6 +17,9 @@ class StockWarehouse(models.Model): #osv.osv ??
         column1='warehouse_id',
         column2='rule_id',
         string='Cycle Count Rules')
+    cycle_count_planning_horizon = fields.Integer(
+        string='Cycle Count planning horizon',
+        help='Cycle Count planning horizon in days')
 
     @api.model
     def _get_cycle_count_locations_search_domain(self, wh):
@@ -43,21 +47,17 @@ class StockWarehouse(models.Model): #osv.osv ??
             if locations:
                 self.test_field = locations
                 for rule in wh.cycle_count_rule_ids:
-                    # TODO: test with several rules.
                     proposed_cycle_counts.extend(rule.compute_rule(locations))
         if proposed_cycle_counts:
-            # TODO: check if it works when duplicated location.
             locations = list(set([d['location'] for d in
                                   proposed_cycle_counts]))
             for loc in locations:
-                # TODO: test with several proposals.
                 proposed_for_loc = filter(lambda x: x['location'] == loc,
                                           proposed_cycle_counts)
                 earliest_date = min([d['date'] for d in proposed_for_loc])
                 cycle_count_proposed = filter(lambda x: x['date'] ==
                                               earliest_date,
                                               proposed_for_loc)[0]
-                # TODO: add permitted states.
                 domain = [('location_id', '=', loc.id),
                           ('state', 'in', ['draft'])]
                 existing_cycle_counts = self.env['stock.cycle.count'].search(
@@ -72,8 +72,10 @@ class StockWarehouse(models.Model): #osv.osv ??
                         'state': 'draft'
                     })
                     existing_cycle_counts.state = 'cancelled'
-
-                if not existing_cycle_counts:
+                delta = datetime.strptime(cycle_count_proposed['date'],
+                                      '%Y-%m-%d %H:%M:%S') - datetime.today()
+                if not existing_cycle_counts and \
+                        delta.days < self.cycle_count_planning_horizon:
                     self.env['stock.cycle.count'].create({
                         'date_deadline': cycle_count_proposed['date'],
                         'location_id': cycle_count_proposed['location'].id,

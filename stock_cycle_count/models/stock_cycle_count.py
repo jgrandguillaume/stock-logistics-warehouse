@@ -19,13 +19,18 @@ class StockCycleCount(models.Model):
             'stock.cycle.count') or ''
         return super(StockCycleCount, self).create(vals)
 
+    @api.model
+    def _company_get(self):
+        company_id = self.env['res.company']._company_default_get(self._name)
+        return company_id
+
     name = fields.Char(string='Name', readonly=True)
     location_id = fields.Many2one(comodel_name='stock.location',
                                   string='Location',
                                   required=True)
     responsible_id = fields.Many2one(comodel_name='res.users',
                                      string='Assigned to')
-    date_deadline = fields.Datetime(string='Required Date')
+    date_deadline = fields.Date(string='Required Date')
     cycle_count_rule_id = fields.Many2one(comodel_name='stock.cycle.count.rule',
                                           string='Cycle count rule',
                                           required=True)
@@ -39,6 +44,10 @@ class StockCycleCount(models.Model):
                                            inverse_name='cycle_count_id',
                                            string='Inventory Adjustment')
     inventory_adj_count = fields.Integer(compute=_count_inventory_adj)
+    company_id = fields.Many2one(comodel_name='res.company',
+                                 string='Company',
+                                 required=True,
+                                 default=_company_get)
 
     @api.one
     def do_cancel(self):

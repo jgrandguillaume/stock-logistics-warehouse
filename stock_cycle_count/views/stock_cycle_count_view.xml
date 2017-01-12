@@ -62,6 +62,7 @@
                         <group name="right">
                             <field name="responsible_id">Assigned to</field>
                             <field name="date_deadline">Deadline Date</field>
+                            <field name="company_id"/>
                         </group>
                     </group>
 

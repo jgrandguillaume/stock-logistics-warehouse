@@ -28,7 +28,6 @@ class StockCycleCountRule(models.Model):
                 ('location_id', '=', loc.id),
                 ('state', 'in', ['confirm', 'done', 'draft'])]).mapped('date')
             if last_inventories:
-                # TODO: Test correct sort.
                 latest_inventory = sorted(last_inventories, reverse=True)[0]
                 try:
                     period = self.periodic_count_period / \
