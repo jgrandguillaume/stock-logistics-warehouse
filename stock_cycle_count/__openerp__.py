@@ -11,7 +11,7 @@
               "Odoo Community Association (OCA)",
     "website": "https://www.odoo-community.org",
     "category": "Warehouse Management",
-    "depends": ["stock"],
+    "depends": ["stock", "mail"],
     "data": [
         'views/stock_cycle_count_view.xml',
         'views/stock_cycle_count_rule_view.xml',

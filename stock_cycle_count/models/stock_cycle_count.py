@@ -8,6 +8,7 @@ from openerp import api, fields, models
 
 class StockCycleCount(models.Model):
     _name = 'stock.cycle.count'
+    _inherit = 'mail.thread'
 
     @api.one
     def _count_inventory_adj(self):
