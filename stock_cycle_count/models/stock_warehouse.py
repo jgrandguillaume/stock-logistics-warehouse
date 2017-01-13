@@ -18,7 +18,7 @@ class StockWarehouse(models.Model):
         column2='rule_id',
         string='Cycle Count Rules')
     cycle_count_planning_horizon = fields.Integer(
-        string='Cycle Count planning horizon',
+        string='Cycle Count Planning Horizon',
         help='Cycle Count planning horizon in days')
 
     @api.model
