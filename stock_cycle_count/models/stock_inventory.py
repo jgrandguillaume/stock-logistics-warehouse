@@ -14,5 +14,6 @@ class StockInventory(models.Model):
 
     @api.multi
     def action_done(self):
-        self.cycle_count_id.state = 'done'
+        if self.cycle_count_id:
+            self.cycle_count_id.state = 'done'
         return super(StockInventory, self).action_done()

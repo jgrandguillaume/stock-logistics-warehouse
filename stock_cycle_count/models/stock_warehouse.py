@@ -36,7 +36,7 @@ class StockWarehouse(models.Model):
             self._get_cycle_count_locations_search_domain(wh))
         return locations
 
-    @api.multi
+    @api.one
     def action_compute_cycle_count_rules(self):
         ''' Apply the rule in all the sublocations of a given warehouse(s) and
         returns a list with required dates for the cycle count of each
