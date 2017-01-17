@@ -33,6 +33,11 @@
                                    attrs="{'invisible': [('rule_type', '!=', 'periodic')]}"/>
                             <field name="periodic_count_period"
                                    attrs="{'invisible': [('rule_type', '!=', 'periodic')]}"/>
+                            <field name="turnover_inventory_value_threshold"
+                                   attrs="{'invisible': [('rule_type', '!=', 'turnover')]}"
+                                   widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="currency_id"
+                                   invisible="True"/>
                         </group>
                     </group>
 

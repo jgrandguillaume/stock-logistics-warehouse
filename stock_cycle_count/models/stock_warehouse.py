@@ -45,7 +45,6 @@ class StockWarehouse(models.Model):
         for wh in self:
             locations = self._search_cycle_count_locations(wh)
             if locations:
-                self.test_field = locations
                 for rule in wh.cycle_count_rule_ids:
                     proposed_cycle_counts.extend(rule.compute_rule(locations))
         if proposed_cycle_counts:
