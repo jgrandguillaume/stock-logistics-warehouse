@@ -17,6 +17,7 @@
         'views/stock_cycle_count_rule_view.xml',
         'views/stock_warehouse_view.xml',
         'views/stock_inventory_view.xml',
+        'views/stock_location_view.xml',
         'data/cycle_count_sequence.xml',
         'security/ir.model.access.csv'],
     "license": "AGPL-3",

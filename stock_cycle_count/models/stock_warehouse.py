@@ -20,20 +20,41 @@ class StockWarehouse(models.Model):
     cycle_count_planning_horizon = fields.Integer(
         string='Cycle Count Planning Horizon',
         help='Cycle Count planning horizon in days')
+    cycle_count_zero_confirmation = fields.Boolean(
+        string='Zero Confirmation',
+        help='Triggers a zero-confirmation order when any location child of '
+             'the warehouse runs out of stock.')
+
+    @api.multi
+    def write(self, vals):
+        super(StockWarehouse, self).write(vals)
+        locations = self._search_cycle_count_locations()
+        for loc in locations:
+            loc.cycle_count_zero_confirmation = \
+                self.cycle_count_zero_confirmation
+        rule_model = self.env['stock.cycle.count.rule']
+        zero_rule = rule_model.search([
+            ('rule_type', '=', 'zero'), ('warehouse_ids', '=', self.id)])
+        if not zero_rule:
+            rule_model.create({
+                'name': 'Zero Confirmation for %s' % self.name,
+                'rule_type': 'zero',
+                'warehouse_ids': [(4, self.id)]
+            })
+        return True
 
     @api.model
-    def _get_cycle_count_locations_search_domain(self, wh):
-        wh_parent_left = wh.view_location_id.parent_left
-        wh_parent_right = wh.view_location_id.parent_right
-        domain = [('id', 'child_of', wh.view_location_id.id),
-                  ('parent_left', '>', wh_parent_left),
+    def _get_cycle_count_locations_search_domain(self):
+        wh_parent_left = self.view_location_id.parent_left
+        wh_parent_right = self.view_location_id.parent_right
+        domain = [('parent_left', '>', wh_parent_left),
                   ('parent_right', '<', wh_parent_right)]
         return domain
 
     @api.model
-    def _search_cycle_count_locations(self, wh):
+    def _search_cycle_count_locations(self):
         locations = self.env['stock.location'].search(
-            self._get_cycle_count_locations_search_domain(wh))
+            self._get_cycle_count_locations_search_domain())
         return locations
 
     @api.one
@@ -42,11 +63,10 @@ class StockWarehouse(models.Model):
         returns a list with required dates for the cycle count of each
         location '''
         proposed_cycle_counts = []
-        for wh in self:
-            locations = self._search_cycle_count_locations(wh)
-            if locations:
-                for rule in wh.cycle_count_rule_ids:
-                    proposed_cycle_counts.extend(rule.compute_rule(locations))
+        locations = self._search_cycle_count_locations()
+        if locations:
+            for rule in self.cycle_count_rule_ids:
+                proposed_cycle_counts.extend(rule.compute_rule(locations))
         if proposed_cycle_counts:
             locations = list(set([d['location'] for d in
                                   proposed_cycle_counts]))

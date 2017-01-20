@@ -14,6 +14,7 @@
                     string="Compute cycle count rule" class="oe_highlight"/>
                 <group>
                     <field name="cycle_count_planning_horizon"/>
+                    <field name="cycle_count_zero_confirmation"/>
                     <field name="cycle_count_rule_ids">Cycle count
                         rules</field>
                 </group>

@@ -18,7 +18,8 @@ class StockCycleCountRule(models.Model):
     def _selection_rule_types(self):
         return [
             ('periodic', _('Periodic')),
-            ('turnover', _('Value Turnover'))]
+            ('turnover', _('Value Turnover')),
+            ('zero', _('Zero Confirmation'))]
 
     def compute_rule(self, locs):
         if self.rule_type == 'periodic':
