@@ -10,13 +10,19 @@
         <field name="inherit_id" ref="stock.view_warehouse"/>
         <field name="arch" type="xml">
             <notebook position="before">
-                <button name="action_compute_cycle_count_rules" type="object"
-                    string="Compute cycle count rule" class="oe_highlight"/>
+                <h2>Cycle Counting</h2>
                 <group>
-                    <field name="cycle_count_planning_horizon"/>
-                    <field name="cycle_count_zero_confirmation"/>
-                    <field name="cycle_count_rule_ids">Cycle count
-                        rules</field>
+                    <group>
+                        <field name="cycle_count_planning_horizon"/>
+                        <field name="cycle_count_zero_confirmation"/>
+                        <button name="action_compute_cycle_count_rules"
+                                type="object" string="Compute cycle count rule"
+                                class="oe_highlight"/>
+                    </group>
+                    <group>
+                        <field name="cycle_count_rule_ids" nolabel="1">Cycle
+                            count rules</field>
+                    </group>
                 </group>
             </notebook>
         </field>

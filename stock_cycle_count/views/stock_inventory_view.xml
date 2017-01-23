@@ -22,7 +22,13 @@
         <field name="arch" type="xml">
             <field name="date" position="after">
                 <field name="cycle_count_id"/>
+                <field name="loc_accuracy"/>
             </field>
+            <xpath expr="//field[@name='line_ids']/tree/field[@name='product_qty']"
+                   position="after">
+                <field name="discrepancy_qty"/>
+                <field name="accuracy"/>
+            </xpath>
         </field>
     </record>
 
