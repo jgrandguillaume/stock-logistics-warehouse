@@ -9,12 +9,6 @@ from openerp import api, fields, models
 class StockMove(models.Model):
     _inherit = 'stock.move'
 
-    # # @api.one
-    # @api.depends('state')
-    # def _check_zero_confirmation(self):
-    #     if self.state == 'done':
-    #         self.location_id.check_zero_confirmation()
-
     @api.multi
     def action_done(self):
         super(StockMove, self).action_done()

@@ -27,6 +27,7 @@
                         <group>
                             <field name="name"/>
                             <field name="rule_type"/>
+                            <field name="active"/>
                         </group>
                         <group name="specific rule fields">
                             <field name="periodic_qty_per_period"

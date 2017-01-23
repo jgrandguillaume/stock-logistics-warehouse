@@ -33,13 +33,20 @@ class StockLocation(models.Model):
 
     def create_zero_confirmation_cycle_count(self):
         date = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
+        wh_id = self.get_warehouse(self)
+        date_horizon = self.env['stock.warehouse'].browse(
+            wh_id).get_horizon_date()[0].strftime('%Y-%m-%d %H:%M:%S')
+        counts_planned = self.env['stock.cycle.count'].search([
+            ('date_deadline', '<', date_horizon), ('state', '=', 'draft'),
+            ('location_id', '=', self.id)])
+        if counts_planned:
+            counts_planned.write({'state': 'cancelled'})
         rule = self.env['stock.cycle.count.rule'].search([
-            ('rule_type', '=', 'zero')])
-        # TODO: add WH to domain: ('warehouse_ids', '=', self.id)?¿
+            ('rule_type', '=', 'zero'), ('warehouse_ids', '=', wh_id)])
         self.env['stock.cycle.count'].create({
             'date_deadline': date,
             'location_id': self.id,
             'cycle_count_rule_id': rule.id,
             'state': 'draft'
         })
-        pass
+        return True

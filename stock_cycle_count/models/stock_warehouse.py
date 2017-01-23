@@ -4,7 +4,7 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
 from openerp import api, fields, models
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 class StockWarehouse(models.Model):
@@ -34,14 +34,24 @@ class StockWarehouse(models.Model):
                 self.cycle_count_zero_confirmation
         rule_model = self.env['stock.cycle.count.rule']
         zero_rule = rule_model.search([
-            ('rule_type', '=', 'zero'), ('warehouse_ids', '=', self.id)])
-        if not zero_rule:
+            ('rule_type', '=', 'zero'), ('warehouse_ids', '=', self.id), '|',
+            ('active', '=', True), ('active', '=', False)])
+        if zero_rule:
+            zero_rule.active = self.cycle_count_zero_confirmation
+        else:
             rule_model.create({
                 'name': 'Zero Confirmation for %s' % self.name,
                 'rule_type': 'zero',
                 'warehouse_ids': [(4, self.id)]
             })
         return True
+
+    @api.one
+    def get_horizon_date(self):
+        date = datetime.today()
+        delta = timedelta(self.cycle_count_planning_horizon)
+        date_horizon = date + delta
+        return date_horizon
 
     @api.model
     def _get_cycle_count_locations_search_domain(self):
@@ -57,6 +67,12 @@ class StockWarehouse(models.Model):
             self._get_cycle_count_locations_search_domain())
         return locations
 
+    @api.model
+    def _cycle_count_rules_to_compute(self):
+        rules = self.cycle_count_rule_ids.search([
+            ('rule_type', '!=', 'zero')])
+        return rules
+
     @api.one
     def action_compute_cycle_count_rules(self):
         ''' Apply the rule in all the sublocations of a given warehouse(s) and
@@ -64,8 +80,9 @@ class StockWarehouse(models.Model):
         location '''
         proposed_cycle_counts = []
         locations = self._search_cycle_count_locations()
+        rules = self._cycle_count_rules_to_compute()
         if locations:
-            for rule in self.cycle_count_rule_ids:
+            for rule in rules:
                 proposed_cycle_counts.extend(rule.compute_rule(locations))
         if proposed_cycle_counts:
             locations = list(set([d['location'] for d in
