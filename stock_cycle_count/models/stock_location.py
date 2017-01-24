@@ -10,6 +10,14 @@ from datetime import datetime
 class StockLocation(models.Model):
     _inherit = 'stock.location'
 
+    @api.one
+    def _compute_loc_accuracy(self):
+        history = self.env['stock.inventory.history'].search([
+            ('location_id', '=', self.id)]).sorted(key=lambda r: r.write_date,
+                                                   reverse=True)
+        if history:
+            self.loc_accuracy = history[0].accuracy
+
     cycle_count_zero_confirmation = fields.Boolean(
         string='Zero Confirmation',
         help='Triggers a zero-confirmation validation when the location runs '
@@ -18,6 +26,8 @@ class StockLocation(models.Model):
                                                     'Quantity Variance '
                                                     'Threshold')
     last_inventory_adjustment = fields.Datetime('Last Inventory Adjustment')
+    loc_accuracy = fields.Float(string='Inventory Accuracy',
+                                compute=_compute_loc_accuracy)
 
     @api.model
     def _get_zero_confirmation_domain(self):

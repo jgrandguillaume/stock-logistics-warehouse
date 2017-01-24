@@ -20,6 +20,7 @@ class StockCycleCountRule(models.Model):
         return [
             ('periodic', _('Periodic')),
             ('turnover', _('Value Turnover')),
+            ('accuracy', _('Minimum Accuracy')),
             ('zero', _('Zero Confirmation'))]
 
     @api.one
@@ -30,17 +31,18 @@ class StockCycleCountRule(models.Model):
                 _('Zero confirmation rules can only have one warehouse '
                   'assigned.')
             )
-        zero_rule = self.search([
-            ('rule_type', '=', 'zero'),
-            ('warehouse_ids', '=', self.warehouse_ids.id), '|',
-            ('active', '=', True), ('active', '=', False)])
-        if len(zero_rule) > 1:
-            raise UserError(
-                _('You can only have one zero confirmation rule per '
-                  'warehouse \nIf you do not see any, it may be inactive. '
-                  'You can reactivate a zero confirmation rule from the '
-                  'warehouse view.')
-            )
+        if self.rule_type == 'zero':
+            zero_rule = self.search([
+                ('rule_type', '=', 'zero'),
+                ('warehouse_ids', '=', self.warehouse_ids.id), '|',
+                ('active', '=', True), ('active', '=', False)])
+            if len(zero_rule) > 1:
+                raise UserError(
+                    _('You can only have one zero confirmation rule per '
+                      'warehouse \nIf you do not see any, it may be inactive. '
+                      'You can reactivate a zero confirmation rule from the '
+                      'warehouse view.')
+                )
 
     name = fields.Char('Name')
     rule_type = fields.Selection(selection="_selection_rule_types",
@@ -54,17 +56,29 @@ class StockCycleCountRule(models.Model):
     currency_id = fields.Many2one(comodel_name='res.currency',
                                   string='Currency',
                                   compute=_compute_currency)
+    accuracy_threshold = fields.Float(string='Minimum Accuracy Threshold')
     warehouse_ids = fields.Many2many(comodel_name='stock.warehouse',
                                      relation='warehouse_cycle_count_rule_rel',
                                      column1='rule_id',
                                      column2='warehouse_id',
                                      string='Applied in')
 
+    @api.model
+    def create(self, vals):
+        cycle_count_rule = super(StockCycleCountRule, self).create(vals)
+        if (cycle_count_rule.warehouse_ids and
+                cycle_count_rule.rule_type == 'zero'):
+            cycle_count_rule.warehouse_ids.write({
+                'cycle_count_zero_confirmation': cycle_count_rule.active})
+        return cycle_count_rule
+
     def compute_rule(self, locs):
         if self.rule_type == 'periodic':
             proposed_cycle_counts = self._compute_rule_periodic(locs)
         elif self.rule_type == 'turnover':
             proposed_cycle_counts = self._compute_rule_turnover(locs)
+        elif self.rule_type == 'accuracy':
+            proposed_cycle_counts = self._compute_rule_accuracy(locs)
         return proposed_cycle_counts
 
     @api.model
@@ -148,3 +162,12 @@ class StockCycleCountRule(models.Model):
                 cycle_counts.append(cycle_count)
         return cycle_counts
 
+    @api.model
+    def _compute_rule_accuracy(self, locs):
+        cycle_counts = []
+        for loc in locs:
+            if loc.loc_accuracy < self.accuracy_threshold:
+                next_date = datetime.today()
+                cycle_count = self._propose_cycle_count(next_date, loc)
+                cycle_counts.append(cycle_count)
+        return cycle_counts
