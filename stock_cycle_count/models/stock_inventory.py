@@ -18,7 +18,8 @@ class StockInventory(models.Model):
             self.loc_accuracy = (total_qty - abs_discrepancy) / total_qty
 
     cycle_count_id = fields.Many2one(comodel_name='stock.cycle.count',
-                                     string='Stock Cycle Count')
+                                     string='Stock Cycle Count',
+                                     ondelete='cascade')
     loc_accuracy = fields.Float(string='Accuracy',
                                 compute=_compute_loc_accuracy)
 
