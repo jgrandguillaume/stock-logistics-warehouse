@@ -47,3 +47,7 @@ class StockInventory(models.Model):
                 self.action_over_discrepancies(over_discrepancies)
             else:
                 return super(StockInventory, self).action_done()
+
+    @api.multi
+    def action_force_done(self):
+        return super(StockInventory, self).action_done()

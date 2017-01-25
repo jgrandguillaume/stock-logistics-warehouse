@@ -24,13 +24,9 @@ Configuration
 
 You can configure the rules to compute the cycle count, acting as follow:
 
-#. Go to "Inventory > Warehouse Management" > Warehouses (or Locations)"
+#. Go to "Inventory > Warehouse Management" > Warehouses (or Locations)".
 #. Modify the "Maximum Discrepancy Rate Threshold" either in a Warehouse or
- in a location. If set to 0.0 the threshold is disabled.
-
-.. figure:: path/to/local/image.png
-   :alt: alternative description
-   :width: 600 px
+   in a location. If set to 0.0 the threshold is disabled.
 
 Usage
 =====
@@ -38,9 +34,10 @@ Usage
 If you configured a "Maximum Discrepancy Rate Threshold".
 
 * When validating an Inventory Adjustment if some line exceed the Discrepancy
-Threshold the system will raise an user error.
+  Threshold the system will raise an user error.
 * If both WH and location thresholds are configured, the location one has
-preference.
+  preference.
+* The warehouse manager can force the validation of an inventory.
 
 
 .. image:: https://odoo-community.org/website/image/ir.attachment/5784_f2813bd/datas
