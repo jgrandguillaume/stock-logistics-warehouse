@@ -16,7 +16,8 @@
     "data": [
         'views/stock_inventory_view.xml',
         'views/stock_warehouse_view.xml',
-        'views/stock_location_view.xml'
+        'views/stock_location_view.xml',
+        'security/stock_inventory_discrepancy_security.xml'
     ],
     "license": "AGPL-3",
     'installable': True,

@@ -7,8 +7,10 @@ Stock Inventory Discrepancy
 ===========================
 
 Adds the capability to show the discrepancy of every line in an inventory and
-to block the inventory validation when the discrepancy is over a user defined
-threshold.
+to block the inventory validation (setting it as 'Pending to Approve') when the
+discrepancy is over a user defined threshold. Only new group "Inventory /
+Control Manager" will be able to force the validation of those blocked
+inventories.
 
 
 Installation
@@ -34,10 +36,12 @@ Usage
 If you configured a "Maximum Discrepancy Rate Threshold".
 
 * When validating an Inventory Adjustment if some line exceed the Discrepancy
-  Threshold the system will raise an user error.
+  Threshold the system will raise an user error and set the inventory's state
+  to 'Pending to Approve'.
 * If both WH and location thresholds are configured, the location one has
   preference.
-* The warehouse manager can force the validation of an inventory.
+* The warehouse control manager can force the validation of an inventory
+  pending to approve.
 
 
 .. image:: https://odoo-community.org/website/image/ir.attachment/5784_f2813bd/datas
