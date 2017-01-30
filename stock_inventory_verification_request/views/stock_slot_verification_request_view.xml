@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2017 Eficent Business and IT Consulting Services S.L.
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+
+<odoo>
+
+    <record id="stock_slot_verification_request_tree_view" model="ir.ui.view">
+        <field name="name">stock.slot.verification.request.tree</field>
+        <field name="model">stock.slot.verification.request</field>
+        <field name="arch" type="xml">
+            <tree string="Stock Slot Verification Request">
+                <field name="name"/>
+                <field name="inventory_id"/>
+                <field name="product_id"/>
+                <field name="create_uid"/>
+                <field name="create_date"/>
+                <field name="responsible_id"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="stock_slot_verification_request_form_view" model="ir.ui.view">
+        <field name="name">stock.slot.verification.request.form</field>
+        <field name="model">stock.slot.verification.request</field>
+        <field name="arch" type="xml">
+            <form string="Stock Slot Verification Request">
+                <header>
+                    <button name="action_confirm"
+                            type="object" states="wait" string="Confirm"
+                            class="oe_highlight" />
+                    <button name="action_solved"
+                            type="object" states="open" string="Mark as Solved"/>
+                    <button name="action_cancel"
+                            type="object" states="open"
+                            string="Mark as Cancelled"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="wait,open,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label string="Slot Verification Request"/>
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="inventory_id"/>
+                            <field name="product_id"/>
+                            <field name="create_uid"/>
+                            <field name="create_date"/>
+                            <field name="responsible_id"/>
+                        </group>
+                        <group>
+                            <field name="notes"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Involved Locations"
+                              attrs="{'invisible': [('state', '=', 'wait')]}">
+                            <field name="involved_location_ids"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <act_window id="action_slot_verification_request"
+                name="Stock Slot Verification Request"
+                res_model="stock.slot.verification.request"
+                view_mode="tree,form" />
+    <menuitem id="menu_slot_verification_request"
+              name="Slot Verification Request"
+              parent="stock.menu_stock_inventory_control"
+              sequence="40"
+              action="action_slot_verification_request" />
+
+</odoo>
