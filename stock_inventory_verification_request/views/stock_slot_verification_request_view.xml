@@ -59,7 +59,16 @@
                     <notebook>
                         <page string="Involved Locations"
                               attrs="{'invisible': [('state', '=', 'wait')]}">
-                            <field name="involved_location_ids"/>
+                            <field name="involved_location_ids">
+                               <tree>
+                                   <field name="complete_name"/>
+                                   <field name="comment"/>
+                               </tree>
+                            </field>
+                        </page>
+                        <page string="Involved Moves"
+                              attrs="{'invisible': [('state', '=', 'wait')]}">
+                            <field name="involved_move_ids"/>
                         </page>
                     </notebook>
                 </sheet>

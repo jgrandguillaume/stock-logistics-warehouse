@@ -35,30 +35,38 @@ class SlotVerificationRequest(models.Model):
         column1='slot_verification_request_id',
         column2='location_id',
         string='Involved Locations')
+    involved_move_ids = fields.Many2many(
+        comodel_name='stock.move',
+        relation='slot_verification_move_involved_rel',
+        column1='slot_verification_request_id',
+        column2='move_id',
+        string='Involved Stock Moves')
 
     @api.model
-    def _get_involved_locs_domain(self):
-        # TODO: debug this
+    def _get_involved_moves_domain(self):
         loc = self.inventory_id.location_id
-        domain = [('product_id', '=', self.product_id), '|',
-                  ('location_id', '=', loc),
-                  ('location_dest_id', '=', loc)]
+        domain = [('product_id', '=', self.product_id.id), '|',
+                  ('location_id', '=', loc.id),
+                  ('location_dest_id', '=', loc.id)]
         return domain
 
     @api.model
-    def _get_involved_locations(self):
+    def _get_involved_moves_and_locations(self):
         # TODO: debug this
         involved_moves = self.env['stock.move'].search(
-            self._get_involved_locs_domain())
-        involved_locs = involved_moves.mapped('location_id')
-        return involved_locs
+            self._get_involved_moves_domain())
+        involved_locs = involved_moves.mapped('location_id') + \
+            involved_moves.mapped('location_dest_id')
+        # TODO: check if duplicated locations appear here.
+        return involved_moves, involved_locs
 
     @api.one
     def action_confirm(self):
         self.state = 'open'
-        involved_locs = self._get_involved_locations()
-        # TODO: is this the proper way?:
-        self.involved_location_ids = involved_locs.ids
+        involved_moves, involved_locs = \
+            self._get_involved_moves_and_locations()
+        self.involved_move_ids = involved_moves
+        self.involved_location_ids = involved_locs
         return True
 
     @api.one
