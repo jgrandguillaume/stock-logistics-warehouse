@@ -2,15 +2,11 @@
    :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
    :alt: License: AGPL-3
 
-===========================
-Stock Inventory Discrepancy
-===========================
+====================================
+Stock Inventory Verification Request
+====================================
 
-Adds the capability to show the discrepancy of every line in an inventory and
-to block the inventory validation (setting it as 'Pending to Approve') when the
-discrepancy is over a user defined threshold. Only new group "Inventory /
-Control Manager" will be able to force the validation of those blocked
-inventories.
+Adds the capability to ... WIP
 
 
 Installation
@@ -26,22 +22,27 @@ Configuration
 
 You can configure the rules to compute the cycle count, acting as follow:
 
-#. Go to "Inventory > Warehouse Management" > Warehouses (or Locations)".
+WIP
+
+#. Go to "Inventory > Warehouse Management" > Warehouses (or Locations)"
 #. Modify the "Maximum Discrepancy Rate Threshold" either in a Warehouse or
-   in a location. If set to 0.0 the threshold is disabled.
+ in a location. If set to 0.0 the threshold is disabled.
+
+.. figure:: path/to/local/image.png
+   :alt: alternative description
+   :width: 600 px
 
 Usage
 =====
 
 If you configured a "Maximum Discrepancy Rate Threshold".
 
+WIP
+
 * When validating an Inventory Adjustment if some line exceed the Discrepancy
-  Threshold the system will raise an user error and set the inventory's state
-  to 'Pending to Approve'.
+Threshold the system will raise an user error.
 * If both WH and location thresholds are configured, the location one has
-  preference.
-* The warehouse control manager can force the validation of an inventory
-  pending to approve.
+preference.
 
 
 .. image:: https://odoo-community.org/website/image/ir.attachment/5784_f2813bd/datas
