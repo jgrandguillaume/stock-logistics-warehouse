@@ -14,7 +14,8 @@
     "data": [
         'views/stock_slot_verification_request_view.xml',
         'views/stock_inventory_view.xml',
-        'data/slot_verification_request_sequence.xml'
+        'data/slot_verification_request_sequence.xml',
+        'security/ir.model.access.csv'
     ],
     "license": "AGPL-3",
     'installable': True,
