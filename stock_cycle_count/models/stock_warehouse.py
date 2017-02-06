@@ -126,3 +126,9 @@ class StockWarehouse(models.Model):
                             'rule_type'].id,
                         'state': 'draft'
                     })
+
+    @api.model
+    def cron_cycle_count(self):
+        whs = self.search([])
+        whs.action_compute_cycle_count_rules()
+        return True
