@@ -18,8 +18,9 @@ class StockWarehouse(models.Model):
         column2='rule_id',
         string='Cycle Count Rules')
     cycle_count_planning_horizon = fields.Integer(
-        string='Cycle Count Planning Horizon',
-        help='Cycle Count planning horizon in days')
+        string='Cycle Count Planning Horizon (in days)',
+        help='Cycle Count planning horizon in days. Only the counts inside '
+             'the horizon will be created.')
     cycle_count_zero_confirmation = fields.Boolean(
         string='Zero Confirmation',
         help='Triggers a zero-confirmation order when any location child of '
@@ -58,7 +59,8 @@ class StockWarehouse(models.Model):
         wh_parent_left = self.view_location_id.parent_left
         wh_parent_right = self.view_location_id.parent_right
         domain = [('parent_left', '>', wh_parent_left),
-                  ('parent_right', '<', wh_parent_right)]
+                  ('parent_right', '<', wh_parent_right),
+                  ('cycle_count_enabled', '=', True)]
         return domain
 
     @api.model

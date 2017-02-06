@@ -44,10 +44,34 @@ class StockCycleCountRule(models.Model):
                       'warehouse view.')
                 )
 
-    name = fields.Char('Name')
+    @api.onchange('rule_type')
+    def _get_rule_description(self):
+        if self.rule_type == 'periodic':
+            self.rule_description = _('Ensures that at least a defined number '
+                                      'of counts in a given period will '
+                                      'be run.')
+        elif self.rule_type == 'turnover':
+            self.rule_description = _('Schedules a count every time the total '
+                                      'turnover of a location exceed the '
+                                      'threshold. This considers every '
+                                      'product going into/out of the location')
+        elif self.rule_type == 'accuracy':
+            self.rule_description = _('Schedules a count every time the '
+                                      'accuracy of a location goes under a '
+                                      'given threshold.')
+        elif self.rule_type == 'zero':
+            self.rule_description = _('Perform a zero confirmation every '
+                                      'time a location in the warehouse runs '
+                                      'out of stock.')
+        else:
+            self.rule_description = _('(No description provided.)')
+
+    name = fields.Char('Name', required=True)
     rule_type = fields.Selection(selection="_selection_rule_types",
                                  string='Type of rule',
                                  required=True)
+    rule_description = fields.Char(string='Rule Description',
+                                   compute=_get_rule_description)
     active = fields.Boolean(string='Active', default=True)
     periodic_qty_per_period = fields.Integer(string='Counts per period')
     periodic_count_period = fields.Integer(string='Period in days')
