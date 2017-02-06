@@ -5,6 +5,7 @@
 
 from openerp import api, fields, models
 from datetime import datetime
+from numpy import mean
 
 
 class StockLocation(models.Model):
@@ -12,11 +13,17 @@ class StockLocation(models.Model):
 
     @api.one
     def _compute_loc_accuracy(self):
-        history = self.env['stock.inventory.history'].search([
-            ('location_id', '=', self.id)]).sorted(key=lambda r: r.write_date,
-                                                   reverse=True)
+        history = self.env['stock.inventory'].search([
+            ('location_id', '=', self.id), ('state', '=', 'done')])
+        history = history.sorted(key=lambda r: r.write_date, reverse=True)
         if history:
-            self.loc_accuracy = history[0].accuracy
+            wh_id = self.get_warehouse(self)
+            wh = self.env['stock.warehouse'].browse(wh_id)
+            if len(history) > wh.counts_for_accuracy_qty:
+                self.loc_accuracy = mean(history[:wh.counts_for_accuracy_qty].
+                                         mapped('inventory_accuracy'))
+            else:
+                self.loc_accuracy = mean(history.mapped('inventory_accuracy'))
 
     cycle_count_zero_confirmation = fields.Boolean(
         string='Zero Confirmation',

@@ -25,6 +25,11 @@ class StockWarehouse(models.Model):
         string='Zero Confirmation',
         help='Triggers a zero-confirmation order when any location child of '
              'the warehouse runs out of stock.')
+    counts_for_accuracy_qty = fields.Integer(
+        string='Inventories for location accuracy calculation',
+        default=1,
+        help='Number of latest inventories used to calculate location '
+             'accuracy')
 
     @api.multi
     def write(self, vals):

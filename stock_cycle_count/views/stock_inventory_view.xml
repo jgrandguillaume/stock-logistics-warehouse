@@ -11,6 +11,7 @@
         <field name="arch" type="xml">
             <field name="date" position="after">
                 <field name="cycle_count_id"/>
+                <field name="inventory_accuracy"/>
             </field>
         </field>
     </record>
@@ -22,7 +23,7 @@
         <field name="arch" type="xml">
             <field name="date" position="after">
                 <field name="cycle_count_id"/>
-                <field name="loc_accuracy"/>
+                <field name="inventory_accuracy"/>
             </field>
         </field>
     </record>
