@@ -17,7 +17,11 @@ class SlotVerificationRequest(models.Model):
 
     name = fields.Char(string='Name', readonly=True)
     inventory_id = fields.Many2one(comodel_name='stock.inventory',
-                                   string='Inventory Adjustment', required=True)
+                                   string='Inventory Adjustment',
+                                   required=True)
+    location_id = fields.Many2one(comodel_name='stock.location',
+                                  string='Location',
+                                  required=True)
     state = fields.Selection(selection=[
         ('wait', 'Waiting Actions'),
         ('open', 'In Progress'),
@@ -44,20 +48,17 @@ class SlotVerificationRequest(models.Model):
 
     @api.model
     def _get_involved_moves_domain(self):
-        loc = self.inventory_id.location_id
         domain = [('product_id', '=', self.product_id.id), '|',
-                  ('location_id', '=', loc.id),
-                  ('location_dest_id', '=', loc.id)]
+                  ('location_id', '=', self.location_id.id),
+                  ('location_dest_id', '=', self.location_id.id)]
         return domain
 
     @api.model
     def _get_involved_moves_and_locations(self):
-        # TODO: debug this
         involved_moves = self.env['stock.move'].search(
             self._get_involved_moves_domain())
         involved_locs = involved_moves.mapped('location_id') + \
             involved_moves.mapped('location_dest_id')
-        # TODO: check if duplicated locations appear here.
         return involved_moves, involved_locs
 
     @api.one

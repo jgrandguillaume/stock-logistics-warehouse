@@ -36,6 +36,7 @@ class StockInventory(models.Model):
             if threshold and line.discrepancy_percentage > threshold:
                 self.env['stock.slot.verification.request'].create({
                     'inventory_id': self.id,
+                    'location_id': self.location_id.id,
                     'state': 'wait',
                     'product_id': line.product_id.id,
                 })

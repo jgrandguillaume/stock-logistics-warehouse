@@ -6,58 +6,41 @@
 Stock Inventory Verification Request
 ====================================
 
-Adds the capability to ... WIP
+Adds the capability to request a Slot Verification when a inventory is
+'Pending to Approve'. When asked from Inventory Adjustment, which have
+discrepancies over the threshold for the location, a Slot Verification
+Request will be created for each line that exceed the maximum discrepancy
+allowed.
 
-
-Installation
-============
-
-To install this module, you need to:
-
-* Download this module to your addons path.
-* Install the module in your database.
-
-Configuration
-=============
-
-You can configure the rules to compute the cycle count, acting as follow:
-
-WIP
-
-#. Go to "Inventory > Warehouse Management" > Warehouses (or Locations)"
-#. Modify the "Maximum Discrepancy Rate Threshold" either in a Warehouse or
- in a location. If set to 0.0 the threshold is disabled.
-
-.. figure:: path/to/local/image.png
-   :alt: alternative description
-   :width: 600 px
+The Inventory Control Manager can then confirm the Slot verification and
+start to check the involved locations and moves to find out some possible
+mistake or problem.
 
 Usage
 =====
 
-If you configured a "Maximum Discrepancy Rate Threshold".
+In order to use this module act as follow:
 
-WIP
-
-* When validating an Inventory Adjustment if some line exceed the Discrepancy
-Threshold the system will raise an user error.
-* If both WH and location thresholds are configured, the location one has
-preference.
+* From a Inventory Adjustment in state 'Pending to Approve' click in the
+  button 'Request Verification'. This will create all the Slot Verification
+  Request needed.
+* Go to 'Inventory / Inventory Control / Slot Verification Request'
+* Go to a Slot Verification Request 'Waiting Actions' and confirm it.
+* You can now check the involved locations and moves to help you.
+* Once you have find the problem and you have fixed it 'Mark as Solved' the
+  Verification.
 
 
 .. image:: https://odoo-community.org/website/image/ir.attachment/5784_f2813bd/datas
    :alt: Try me on Runbot
    :target: https://runbot.odoo-community.org/runbot/153/9.0
 
-.. repo_id is available in https://github.com/OCA/stock-logistics-warehouse
-.. branch is "9.0" for example
-
 
 Bug Tracker
 ===========
 
 Bugs are tracked on `GitHub Issues
-<https://github.com/OCA/{project_repo}/issues>`_. In case of trouble, please
+<https://github.com/OCA/stock-logistics-warehouse/issues>`_. In case of trouble, please
 check there if your issue has already been reported. If you spotted it first,
 help us smash it by providing detailed and welcomed feedback.
 

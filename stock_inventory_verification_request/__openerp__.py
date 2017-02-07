@@ -4,7 +4,8 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 {
     "name": "Stock Inventory Verification Request",
-    "summary": "WIP",
+    "summary": "Adds the capability to request a Slot Verification when "
+               "a inventory is Pending to Approve",
     "version": "9.0.1.0.0",
     "author": "Eficent, "
               "Odoo Community Association (OCA)",
@@ -14,7 +15,8 @@
     "data": [
         'views/stock_slot_verification_request_view.xml',
         'views/stock_inventory_view.xml',
-        'data/slot_verification_request_sequence.xml'
+        'data/slot_verification_request_sequence.xml',
+        'security/ir.model.access.csv'
     ],
     "license": "AGPL-3",
     'installable': True,

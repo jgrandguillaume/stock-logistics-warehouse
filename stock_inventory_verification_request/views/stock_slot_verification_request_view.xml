@@ -11,6 +11,7 @@
             <tree string="Stock Slot Verification Request">
                 <field name="name"/>
                 <field name="inventory_id"/>
+                <field name="location_id"/>
                 <field name="product_id"/>
                 <field name="create_uid"/>
                 <field name="create_date"/>
@@ -47,6 +48,7 @@
                     <group>
                         <group>
                             <field name="inventory_id"/>
+                            <field name="location_id"/>
                             <field name="product_id"/>
                             <field name="create_uid"/>
                             <field name="create_date"/>
@@ -59,16 +61,28 @@
                     <notebook>
                         <page string="Involved Locations"
                               attrs="{'invisible': [('state', '=', 'wait')]}">
-                            <field name="involved_location_ids">
+                            <field name="involved_location_ids" context="{'product_id': product_id}">
                                <tree>
                                    <field name="complete_name"/>
+                                   <field name="product_qty"/>
+                                   <field name="product_uom"/>
                                    <field name="comment"/>
                                </tree>
                             </field>
                         </page>
                         <page string="Involved Moves"
                               attrs="{'invisible': [('state', '=', 'wait')]}">
-                            <field name="involved_move_ids"/>
+                            <field name="involved_move_ids">
+                                <tree>
+                                    <field name="date_expected" widget='date'/>
+                                    <field name="date" widget="date"/>
+                                    <field name="origin"/>
+                                    <field name="location_id"/>
+                                    <field name="location_dest_id"/>
+                                    <field name="product_uom_qty"/>
+                                    <field name="state"/>
+                                </tree>
+                            </field>
                         </page>
                     </notebook>
                 </sheet>
