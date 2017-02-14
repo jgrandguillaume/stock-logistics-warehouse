@@ -15,27 +15,15 @@ class StockInventory(models.Model):
         comodel_name='stock.slot.verification.request',
         string='Slot Verification Requests', inverse_name='inventory_id')
 
-    @api.model
-    def _get_threshold_for_overdiscrepancies(self):
-        threshold = 0.0
-        wh_id = self.location_id.get_warehouse(self.location_id)
-        wh = self.env['stock.warehouse'].browse(wh_id)
-        if self.location_id.discrepancy_threshold > 0.0:
-            threshold = self.location_id.discrepancy_threshold
-        elif wh.discrepancy_threshold > 0.0:
-            threshold = wh.discrepancy_threshold
-        else:
-            pass
-        return threshold
-
     @api.multi
     def action_request_verification(self):
         self.requested_verification = True
-        threshold = self._get_threshold_for_overdiscrepancies()
         for line in self.line_ids:
-            if threshold and line.discrepancy_percentage > threshold:
+            if line.discrepancy_threshold and (line.discrepancy_percent >
+                                               line.discrepancy_threshold):
                 self.env['stock.slot.verification.request'].create({
                     'inventory_id': self.id,
+                    'inventory_line_id': line.id,
                     'location_id': self.location_id.id,
                     'state': 'wait',
                     'product_id': line.product_id.id,

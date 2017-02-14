@@ -31,4 +31,51 @@
         </field>
     </record>
 
+    <record id="view_inventory_line_form" model="ir.ui.view">
+        <field name="name">Inventory Adjustment Line Form View</field>
+        <field name="model">stock.inventory.line</field>
+        <field name="arch" type="xml">
+            <form string="Inventory Line">
+                <sheet>
+                <div class="oe_title">
+                    <h3>Inventory Adjustment Line <field name="id"/></h3>
+                </div>
+                <group>
+                    <group col="2">
+                        <field name="product_id" readonly="1"/>
+                        <field name="inventory_id" readonly="1"/>
+                        <field name="state"/>
+                        <field name="location_id" readonly="1"/>
+                        <field name="package_id" readonly="1"/>
+                        <field name="partner_id" readonly="1"/>
+                        <field name="prod_lot_id" readonly="1"/>
+                        <field name="company_id"/>
+                    </group>
+                    <group col="2">
+                        <field name="theoretical_qty"/>
+                        <field name="product_qty" readonly="1"/>
+                        <field name="product_uom_id" readonly="1"/>
+                        <field name="discrepancy_qty"/>
+                        <label for="discrepancy_percent"/>
+                        <div>
+                            <field name="discrepancy_percent" class="oe_inline"/> %
+                        </div>
+                        <label for="discrepancy_threshold"/>
+                        <div>
+                            <field name="discrepancy_threshold" class="oe_inline"/> %
+                        </div>
+                    </group>
+                </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_inv_adj_line_tree" model="ir.actions.act_window">
+        <field name="name">Open Inventory Adjustment Lines</field>
+        <field name="res_model">stock.inventory.line</field>
+        <field name="view_type">form</field>
+        <field name="view_id" ref="stock.stock_inventory_line_tree"/>
+    </record>
+
 </odoo>

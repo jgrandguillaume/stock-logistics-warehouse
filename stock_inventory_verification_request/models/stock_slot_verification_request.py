@@ -15,13 +15,24 @@ class SlotVerificationRequest(models.Model):
             'stock.slot.verification.request') or ''
         return super(SlotVerificationRequest, self).create(vals)
 
+    @api.one
+    def _count_involved_moves(self):
+        self.involved_move_count = len(self.involved_move_ids)
+
+    @api.one
+    def _count_involved_inv_lines(self):
+        self.involved_inv_line_count = len(self.involved_inv_line_ids)
+
     name = fields.Char(string='Name', readonly=True)
     inventory_id = fields.Many2one(comodel_name='stock.inventory',
                                    string='Inventory Adjustment',
                                    required=True)
+    inventory_line_id = fields.Many2one(comodel_name='stock.inventory.line',
+                                        string='Inventory Line',
+                                        readonly=True)
     location_id = fields.Many2one(comodel_name='stock.location',
                                   string='Location',
-                                  required=True)
+                                  readonly=True)
     state = fields.Selection(selection=[
         ('wait', 'Waiting Actions'),
         ('open', 'In Progress'),
@@ -45,6 +56,14 @@ class SlotVerificationRequest(models.Model):
         column1='slot_verification_request_id',
         column2='move_id',
         string='Involved Stock Moves')
+    involved_move_count = fields.Integer(compute=_count_involved_moves)
+    involved_inv_line_ids = fields.Many2many(
+        comodel_name='stock.inventory.line',
+        relation='slot_verification_inv_line_involved_rel',
+        column1='slot_verification_request_id',
+        column2='inventory_line_id',
+        string='Involved Inventory Lines')
+    involved_inv_line_count = fields.Integer(compute=_count_involved_inv_lines)
 
     @api.model
     def _get_involved_moves_domain(self):
@@ -79,3 +98,36 @@ class SlotVerificationRequest(models.Model):
     def action_solved(self):
         self.state = 'done'
         return True
+
+    @api.multi
+    def action_view_moves(self):
+        action = self.env.ref('stock.action_move_form2')
+        result = action.read()[0]
+        result['context'] = {}
+        moves_ids = sum([svr.involved_move_ids.ids for svr in self], [])
+        if len(moves_ids) > 1:
+            result['domain'] = \
+                "[('id','in',[" + ','.join(map(str, moves_ids)) + "])]"
+        elif len(moves_ids) == 1:
+            res = self.env.ref('stock.view_move_form', False)
+            result['views'] = [(res and res.id or False, 'form')]
+            result['res_id'] = moves_ids and moves_ids[0] or False
+        return result
+
+    @api.multi
+    def action_view_inv_lines(self):
+        # TODO: Check this
+        action = self.env.ref(
+            'stock_inventory_verification_request.action_inv_adj_line_tree')
+        result = action.read()[0]
+        result['context'] = {}
+        line_ids = sum([svr.involved_inv_line_ids.ids for svr in self], [])
+        if len(line_ids) > 1:
+            result['domain'] = \
+                "[('id','in',[" + ','.join(map(str, line_ids)) + "])]"
+        elif len(line_ids) == 1:
+            res = self.env.ref('stock_inventory_verification_request.'
+                               'view_inventory_line_form', False)
+            result['views'] = [(res and res.id or False, 'form')]
+            result['res_id'] = line_ids and line_ids[0] or False
+        return result
