@@ -33,7 +33,7 @@ class StockInventory(models.Model):
         self.requested_verification = True
         threshold = self._get_threshold_for_overdiscrepancies()
         for line in self.line_ids:
-            if threshold and line.discrepancy_percentage > threshold:
+            if threshold and line.discrepancy_percent > threshold:
                 self.env['stock.slot.verification.request'].create({
                     'inventory_id': self.id,
                     'location_id': self.location_id.id,
