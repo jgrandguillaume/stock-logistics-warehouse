@@ -21,36 +21,11 @@ class StockWarehouse(models.Model):
         string='Cycle Count Planning Horizon (in days)',
         help='Cycle Count planning horizon in days. Only the counts inside '
              'the horizon will be created.')
-    cycle_count_zero_confirmation = fields.Boolean(
-        string='Zero Confirmation',
-        help='Triggers a zero-confirmation order when any location child of '
-             'the warehouse runs out of stock.')
     counts_for_accuracy_qty = fields.Integer(
         string='Inventories for location accuracy calculation',
         default=1,
         help='Number of latest inventories used to calculate location '
              'accuracy')
-
-    @api.multi
-    def write(self, vals):
-        super(StockWarehouse, self).write(vals)
-        locations = self._search_cycle_count_locations()
-        for loc in locations:
-            loc.cycle_count_zero_confirmation = \
-                self.cycle_count_zero_confirmation
-        rule_model = self.env['stock.cycle.count.rule']
-        zero_rule = rule_model.search([
-            ('rule_type', '=', 'zero'), ('warehouse_ids', '=', self.id), '|',
-            ('active', '=', True), ('active', '=', False)])
-        if zero_rule:
-            zero_rule.active = self.cycle_count_zero_confirmation
-        else:
-            rule_model.create({
-                'name': 'Zero Confirmation for %s' % self.name,
-                'rule_type': 'zero',
-                'warehouse_ids': [(4, self.id)]
-            })
-        return True
 
     @api.one
     def get_horizon_date(self):

@@ -25,10 +25,12 @@ class StockLocation(models.Model):
             else:
                 self.loc_accuracy = mean(history.mapped('inventory_accuracy'))
 
-    cycle_count_zero_confirmation = fields.Boolean(
-        string='Zero Confirmation',
-        help='Triggers a zero-confirmation validation when the location runs '
-             'out of stock.')
+    zero_confirmation_disabled = fields.Boolean(
+        string='Disable Zero Confirmations',
+        default=False,
+        help='Define whether this location will trigger a zero-confirmation '
+             'validation when a rule for its warehouse is defined to perform '
+             'zero-confirmations.')
     cycle_count_disabled = fields.Boolean(
         string='Exclude from Cycle Count',
         default=False,
@@ -47,10 +49,18 @@ class StockLocation(models.Model):
 
     @api.one
     def check_zero_confirmation(self):
-        quants = self.env['stock.quant'].search(
-            self._get_zero_confirmation_domain())
-        if not quants:
-            self.create_zero_confirmation_cycle_count()
+        if not self.zero_confirmation_disabled:
+            wh_id = self.get_warehouse(self)
+            wh = self.env['stock.warehouse'].browse(wh_id)
+            rule_model = self.env['stock.cycle.count.rule']
+            zero_rule = rule_model.search([
+                ('rule_type', '=', 'zero'),
+                ('warehouse_ids', '=', wh.id)])
+            if zero_rule:
+                quants = self.env['stock.quant'].search(
+                    self._get_zero_confirmation_domain())
+                if not quants:
+                    self.create_zero_confirmation_cycle_count()
 
     def create_zero_confirmation_cycle_count(self):
         date = datetime.today().strftime('%Y-%m-%d %H:%M:%S')

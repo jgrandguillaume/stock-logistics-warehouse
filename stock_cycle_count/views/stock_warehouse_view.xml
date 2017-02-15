@@ -13,7 +13,6 @@
                 <group string="Cycle Counting">
                     <group >
                         <field name="cycle_count_planning_horizon"/>
-                        <field name="cycle_count_zero_confirmation"/>
                         <field name="counts_for_accuracy_qty"/>
                     </group>
                     <group>

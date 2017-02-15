@@ -34,14 +34,11 @@ class StockCycleCountRule(models.Model):
         if self.rule_type == 'zero':
             zero_rule = self.search([
                 ('rule_type', '=', 'zero'),
-                ('warehouse_ids', '=', self.warehouse_ids.id), '|',
-                ('active', '=', True), ('active', '=', False)])
+                ('warehouse_ids', '=', self.warehouse_ids.id)])
             if len(zero_rule) > 1:
                 raise UserError(
                     _('You can only have one zero confirmation rule per '
-                      'warehouse \nIf you do not see any, it may be inactive. '
-                      'You can reactivate a zero confirmation rule from the '
-                      'warehouse view.')
+                      'warehouse.')
                 )
 
     @api.onchange('rule_type')
@@ -88,15 +85,6 @@ class StockCycleCountRule(models.Model):
                                      column1='rule_id',
                                      column2='warehouse_id',
                                      string='Applied in')
-
-    @api.model
-    def create(self, vals):
-        cycle_count_rule = super(StockCycleCountRule, self).create(vals)
-        if (cycle_count_rule.warehouse_ids and
-                cycle_count_rule.rule_type == 'zero'):
-            cycle_count_rule.warehouse_ids.write({
-                'cycle_count_zero_confirmation': cycle_count_rule.active})
-        return cycle_count_rule
 
     def compute_rule(self, locs):
         if self.rule_type == 'periodic':
