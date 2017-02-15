@@ -15,15 +15,17 @@ class StockInventory(models.Model):
         abs_discrepancy = sum(self.line_ids.mapped(
             lambda x: abs(x.discrepancy_qty)))
         if total_qty:
-            self.inventory_accuracy = (total_qty - abs_discrepancy) / total_qty
+            self.inventory_accuracy = 100 * (total_qty - abs_discrepancy) / \
+                                      total_qty
         if not self.line_ids and self.state == 'done':
-            self.inventory_accuracy = 1.0
+            self.inventory_accuracy = 100.0
 
     cycle_count_id = fields.Many2one(comodel_name='stock.cycle.count',
                                      string='Stock Cycle Count',
                                      ondelete='cascade')
     inventory_accuracy = fields.Float(string='Accuracy',
-                                      compute=_compute_inventory_accuracy)
+                                      compute=_compute_inventory_accuracy,
+                                      digits=(3, 2))
 
     @api.multi
     def action_done(self):

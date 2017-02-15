@@ -29,15 +29,16 @@ class StockLocation(models.Model):
         string='Zero Confirmation',
         help='Triggers a zero-confirmation validation when the location runs '
              'out of stock.')
-    cycle_count_enabled = fields.Boolean(
-        string='Cycle Counted',
-        default=True,
+    cycle_count_disabled = fields.Boolean(
+        string='Exclude from Cycle Count',
+        default=False,
         help='Define whether the location is going to be cycle counted.')
     qty_variance_inventory_threshold = fields.Float('Acceptable Inventory '
                                                     'Quantity Variance '
                                                     'Threshold')
     loc_accuracy = fields.Float(string='Inventory Accuracy',
-                                compute=_compute_loc_accuracy)
+                                compute=_compute_loc_accuracy,
+                                digits=(3, 2))
 
     @api.model
     def _get_zero_confirmation_domain(self):

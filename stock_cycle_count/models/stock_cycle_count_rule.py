@@ -52,7 +52,7 @@ class StockCycleCountRule(models.Model):
                                       'be run.')
         elif self.rule_type == 'turnover':
             self.rule_description = _('Schedules a count every time the total '
-                                      'turnover of a location exceed the '
+                                      'turnover of a location exceeds the '
                                       'threshold. This considers every '
                                       'product going into/out of the location')
         elif self.rule_type == 'accuracy':
@@ -60,9 +60,10 @@ class StockCycleCountRule(models.Model):
                                       'accuracy of a location goes under a '
                                       'given threshold.')
         elif self.rule_type == 'zero':
-            self.rule_description = _('Perform a zero confirmation every '
+            self.rule_description = _('Perform an Inventory Adjustment every '
                                       'time a location in the warehouse runs '
-                                      'out of stock.')
+                                      'out of stock in order to confirm it is '
+                                      'truly empty.')
         else:
             self.rule_description = _('(No description provided.)')
 
@@ -80,7 +81,8 @@ class StockCycleCountRule(models.Model):
     currency_id = fields.Many2one(comodel_name='res.currency',
                                   string='Currency',
                                   compute=_compute_currency)
-    accuracy_threshold = fields.Float(string='Minimum Accuracy Threshold')
+    accuracy_threshold = fields.Float(string='Minimum Accuracy Threshold',
+                                      digits=(3, 2))
     warehouse_ids = fields.Many2many(comodel_name='stock.warehouse',
                                      relation='warehouse_cycle_count_rule_rel',
                                      column1='rule_id',

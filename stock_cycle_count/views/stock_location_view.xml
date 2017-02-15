@@ -25,8 +25,11 @@
             </xpath>
             <field name="active" position="after">
                 <field name="cycle_count_zero_confirmation"/>
-                <field name="cycle_count_enabled"/>
-                <field name="loc_accuracy"/>
+                <field name="cycle_count_disabled"/>
+                <label for="loc_accuracy"/>
+                <div>
+                    <field name="loc_accuracy" class="oe_inline"/> %
+                </div>
             </field>
         </field>
     </record>

@@ -40,8 +40,11 @@
                                    widget="monetary" options="{'currency_field': 'currency_id'}"/>
                             <field name="currency_id"
                                    invisible="True"/>
-                            <field name="accuracy_threshold"
+                            <label for="accuracy_threshold"
                                    attrs="{'invisible': [('rule_type', '!=', 'accuracy')]}"/>
+                            <div attrs="{'invisible': [('rule_type', '!=', 'accuracy')]}">
+                                <field name="accuracy_threshold" class="oe_inline"/> %
+                            </div>
                         </group>
                     </group>
 

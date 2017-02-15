@@ -65,7 +65,7 @@ class StockWarehouse(models.Model):
         wh_parent_right = self.view_location_id.parent_right
         domain = [('parent_left', '>', wh_parent_left),
                   ('parent_right', '<', wh_parent_right),
-                  ('cycle_count_enabled', '=', True)]
+                  ('cycle_count_disabled', '=', False)]
         return domain
 
     @api.model
