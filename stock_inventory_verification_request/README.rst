@@ -12,9 +12,9 @@ discrepancies over the threshold for the location, a Slot Verification
 Request will be created for each line that exceed the maximum discrepancy
 allowed.
 
-The Inventory Control Manager can then confirm the Slot verification and
-start to check the involved locations and moves to find out some possible
-mistake or problem.
+The Inventory Manager can then confirm the Slot verification and start to
+check the involved Inventory Lines and Moves to find out some possible mistake
+or problem.
 
 Usage
 =====
@@ -26,8 +26,8 @@ In order to use this module act as follow:
   Request needed.
 * Go to 'Inventory / Inventory Control / Slot Verification Request'
 * Go to a Slot Verification Request 'Waiting Actions' and confirm it.
-* You can now check the involved locations and moves to help you.
-* Once you have find the problem and you have fixed it 'Mark as Solved' the
+* You can now check the involved lines and moves to help you.
+* Once you have found the problem and you have fixed it 'Mark as Solved' the
   Verification.
 
 
@@ -53,7 +53,7 @@ Images
 Contributors
 ------------
 
-* Lois Rilo <lois.rilo@eficent.com>
+* Lois Rilo Antelo <lois.rilo@eficent.com>
 
 
 Maintainer
