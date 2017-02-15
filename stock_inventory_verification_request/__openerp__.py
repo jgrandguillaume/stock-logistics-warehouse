@@ -11,7 +11,9 @@
               "Odoo Community Association (OCA)",
     "website": "https://github.com/OCA/stock-logistics-warehouse",
     "category": "Warehouse Management",
-    "depends": ["stock", "stock_inventory_discrepancy"],
+    "depends": ["stock",
+                "stock_inventory_discrepancy",
+                "mail"],
     "data": [
         'views/stock_slot_verification_request_view.xml',
         'views/stock_inventory_view.xml',

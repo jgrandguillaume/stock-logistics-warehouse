@@ -8,6 +8,7 @@ from openerp import fields, models, api
 
 class SlotVerificationRequest(models.Model):
     _name = 'stock.slot.verification.request'
+    _inherit = 'mail.thread'
 
     @api.model
     def create(self, vals):
@@ -26,13 +27,13 @@ class SlotVerificationRequest(models.Model):
     name = fields.Char(string='Name', readonly=True)
     inventory_id = fields.Many2one(comodel_name='stock.inventory',
                                    string='Inventory Adjustment',
-                                   required=True)
+                                   readonly=True)
     inventory_line_id = fields.Many2one(comodel_name='stock.inventory.line',
                                         string='Inventory Line',
                                         readonly=True)
     location_id = fields.Many2one(comodel_name='stock.location',
                                   string='Location',
-                                  readonly=True)
+                                  required=True)
     state = fields.Selection(selection=[
         ('wait', 'Waiting Actions'),
         ('open', 'In Progress'),
@@ -44,12 +45,6 @@ class SlotVerificationRequest(models.Model):
     product_id = fields.Many2one(comodel_name='product.product',
                                  string='Product', required=True)
     notes = fields.Text('Notes')
-    involved_location_ids = fields.Many2many(
-        comodel_name='stock.location',
-        relation='slot_verification_location_involved_rel',
-        column1='slot_verification_request_id',
-        column2='location_id',
-        string='Involved Locations')
     involved_move_ids = fields.Many2many(
         comodel_name='stock.move',
         relation='slot_verification_move_involved_rel',
@@ -73,20 +68,26 @@ class SlotVerificationRequest(models.Model):
         return domain
 
     @api.model
-    def _get_involved_moves_and_locations(self):
+    def _get_involved_lines_domain(self):
+        domain = [('product_id', '=', self.product_id.id),
+                  ('location_id', '=', self.location_id.id)]
+        return domain
+
+    @api.model
+    def _get_involved_lines_and_locations(self):
         involved_moves = self.env['stock.move'].search(
             self._get_involved_moves_domain())
-        involved_locs = involved_moves.mapped('location_id') + \
-            involved_moves.mapped('location_dest_id')
-        return involved_moves, involved_locs
+        involved_lines = self.env['stock.inventory.line'].search(
+            self._get_involved_lines_domain())
+        return involved_moves, involved_lines
 
     @api.one
     def action_confirm(self):
         self.state = 'open'
-        involved_moves, involved_locs = \
-            self._get_involved_moves_and_locations()
+        involved_moves, involved_lines = \
+            self._get_involved_lines_and_locations()
         self.involved_move_ids = involved_moves
-        self.involved_location_ids = involved_locs
+        self.involved_inv_line_ids = involved_lines
         return True
 
     @api.one
@@ -116,7 +117,6 @@ class SlotVerificationRequest(models.Model):
 
     @api.multi
     def action_view_inv_lines(self):
-        # TODO: Check this
         action = self.env.ref(
             'stock_inventory_verification_request.action_inv_adj_line_tree')
         result = action.read()[0]

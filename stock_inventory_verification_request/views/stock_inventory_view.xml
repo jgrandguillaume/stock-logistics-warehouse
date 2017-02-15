@@ -5,7 +5,7 @@
 <odoo>
 
     <record id="view_inventory_form" model="ir.ui.view">
-        <field name="name">Inventory form view - discrepancy extension </field>
+        <field name="name">Inventory form view - SVR extension </field>
         <field name="model">stock.inventory</field>
         <field name="inherit_id" ref="stock.view_inventory_form"/>
         <field name="arch" type="xml">
@@ -21,13 +21,22 @@
                 <field name="requested_verification" invisible="1"/>
             </field>
             <notebook position="inside">
-                    <page string="Slot Verification Requests"
-                          groups="stock.group_stock_manager">
-                        <group>
-                            <field name="slot_verification_ids" nolabel="1"/>
-                        </group>
-                    </page>
+                <page string="Slot Verification Requests"
+                      groups="stock.group_stock_manager">
+                    <group>
+                        <field name="slot_verification_ids" nolabel="1"/>
+                    </group>
+                </page>
             </notebook>
+            <xpath expr="//field[@name='line_ids']/tree/field[@name='discrepancy_threshold']"
+                   position="after">
+                <field name="slot_verification_ids" invisible="1"/>
+                <button string="Slot Verification Request"
+                        attrs="{'invisible': [('slot_verification_ids', '=', [])]}"
+                        name="action_open_svr"
+                        type="object"
+                        icon="gtk-open"/>
+            </xpath>
         </field>
     </record>
 
@@ -45,6 +54,7 @@
                         <field name="product_id" readonly="1"/>
                         <field name="inventory_id" readonly="1"/>
                         <field name="state"/>
+                        <field name="create_date" readonly="1"/>
                         <field name="location_id" readonly="1"/>
                         <field name="package_id" readonly="1"/>
                         <field name="partner_id" readonly="1"/>
@@ -68,6 +78,17 @@
                 </group>
                 </sheet>
             </form>
+        </field>
+    </record>
+
+    <record id="view_inventory_line_tree" model="ir.ui.view">
+        <field name="name">Inventory Line tree view - discrepancy extension</field>
+        <field name="model">stock.inventory.line</field>
+        <field name="inherit_id" ref="stock.stock_inventory_line_tree"/>
+        <field name="arch" type="xml">
+            <field name="location_id" position="after">
+                <field name="create_date" readonly="1"/>
+            </field>
         </field>
     </record>
 
