@@ -115,7 +115,7 @@ class StockCycleCountRule(models.Model):
                 latest_inventory = sorted(last_inventories, reverse=True)[0]
                 try:
                     period = self.periodic_count_period / \
-                             self.periodic_qty_per_period
+                        self.periodic_qty_per_period
                     next_date = datetime.strptime(
                         latest_inventory, '%Y-%m-%d %H:%M:%S') + timedelta(
                         days=period)
@@ -156,7 +156,6 @@ class StockCycleCountRule(models.Model):
                 if moves:
                     total_turnover = 0.0
                     for m in moves:
-                        # TODO: is necessary to take into calculation the type of pricing?
                         turnover = self._compute_turnover(m)
                         total_turnover += turnover
                     try:
@@ -168,8 +167,8 @@ class StockCycleCountRule(models.Model):
                             cycle_counts.append(cycle_count)
                     except Exception as e:
                         raise UserError(_(
-                            'Error found when comparing turnover with the rule '
-                            'threshold. %s') % e.message)
+                            'Error found when comparing turnover with the '
+                            'rule threshold. %s') % e.message)
             else:
                 next_date = datetime.today()
                 cycle_count = self._propose_cycle_count(next_date, loc)

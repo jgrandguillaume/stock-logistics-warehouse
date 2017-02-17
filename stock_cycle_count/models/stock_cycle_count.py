@@ -32,9 +32,10 @@ class StockCycleCount(models.Model):
     responsible_id = fields.Many2one(comodel_name='res.users',
                                      string='Assigned to')
     date_deadline = fields.Date(string='Required Date')
-    cycle_count_rule_id = fields.Many2one(comodel_name='stock.cycle.count.rule',
-                                          string='Cycle count rule',
-                                          required=True)
+    cycle_count_rule_id = fields.Many2one(
+        comodel_name='stock.cycle.count.rule',
+        string='Cycle count rule',
+        required=True)
     state = fields.Selection(selection=[
         ('draft', 'Planned'),
         ('open', 'Execution'),

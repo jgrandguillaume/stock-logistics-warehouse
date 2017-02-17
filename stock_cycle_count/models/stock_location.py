@@ -3,9 +3,17 @@
 #   (http://www.eficent.com)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
-from openerp import api, fields, models
+import logging
+
+from openerp import api, fields, models, tools
 from datetime import datetime
-from numpy import mean
+_logger = logging.getLogger(__name__)
+
+try:
+    from numpy import mean
+    NUMPY_PATH = tools.find_in_path('numpy')
+except (ImportError, IOError) as err:
+    _logger.debug(err)
 
 
 class StockLocation(models.Model):

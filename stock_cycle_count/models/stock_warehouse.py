@@ -90,8 +90,9 @@ class StockWarehouse(models.Model):
                         'state': 'draft'
                     })
                     existing_cycle_counts.state = 'cancelled'
-                delta = datetime.strptime(cycle_count_proposed['date'],
-                                      '%Y-%m-%d %H:%M:%S') - datetime.today()
+                delta = datetime.strptime(
+                    cycle_count_proposed['date'],
+                    '%Y-%m-%d %H:%M:%S') - datetime.today()
                 if not existing_cycle_counts and \
                         delta.days < self.cycle_count_planning_horizon:
                     self.env['stock.cycle.count'].create({

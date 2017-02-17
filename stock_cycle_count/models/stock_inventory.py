@@ -16,7 +16,7 @@ class StockInventory(models.Model):
             lambda x: abs(x.discrepancy_qty)))
         if total_qty:
             self.inventory_accuracy = 100 * (total_qty - abs_discrepancy) / \
-                                      total_qty
+                total_qty
         if not self.line_ids and self.state == 'done':
             self.inventory_accuracy = 100.0
 

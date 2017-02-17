@@ -15,6 +15,9 @@
                 "mail",
                 "stock_inventory_discrepancy",
                 "stock_inventory_exclude_sublocation"],
+    "external_dependencies": {
+        "python": ['numpy'],
+    },
     "data": [
         'views/stock_cycle_count_view.xml',
         'views/stock_cycle_count_rule_view.xml',

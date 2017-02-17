@@ -43,9 +43,9 @@ is described below.
 #. Click on "Action" and then in "Compute Cycle Count Rules".
 #. Go to "Inventory Control > Cycle Counts".
 #. Select a Cycle Count planned an confirm it, this will create a draft
-Inventory Adjustment.
+   Inventory Adjustment.
 #. In the right top corner of the form view you can access the generated
-Inventory Adjustment.
+   Inventory Adjustment.
 #. Proceed with the Inventory Adjustment as usual.
 
 .. image:: https://odoo-community.org/website/image/ir.attachment/5784_f2813bd/datas
