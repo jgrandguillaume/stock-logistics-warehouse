@@ -64,6 +64,18 @@ class StockCycleCountRule(models.Model):
         else:
             self.rule_description = _('(No description provided.)')
 
+    @api.constrains('periodic_qty_per_period', 'periodic_count_period')
+    def _check_negative_periodic(self):
+        if self.periodic_qty_per_period < 1:
+            raise UserError(
+                _('You cannot define a negative or null number of counts per '
+                  'period.')
+            )
+        if self.periodic_count_period < 0:
+            raise UserError(
+                _('You cannot define a negative period.')
+            )
+
     name = fields.Char('Name', required=True)
     rule_type = fields.Selection(selection="_selection_rule_types",
                                  string='Type of rule',
@@ -71,7 +83,8 @@ class StockCycleCountRule(models.Model):
     rule_description = fields.Char(string='Rule Description',
                                    compute=_get_rule_description)
     active = fields.Boolean(string='Active', default=True)
-    periodic_qty_per_period = fields.Integer(string='Counts per period')
+    periodic_qty_per_period = fields.Integer(string='Counts per period',
+                                             default=1)
     periodic_count_period = fields.Integer(string='Period in days')
     turnover_inventory_value_threshold = fields.Float(
         string='Turnover Inventory Value Threshold')
