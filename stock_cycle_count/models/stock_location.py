@@ -80,7 +80,7 @@ class StockLocation(models.Model):
         self.ensure_one()
         date = datetime.today().strftime(DEFAULT_SERVER_DATETIME_FORMAT)
         wh_id = self.get_warehouse().id
-        date_horizon = self.get_warehouse().get_horizon_date()[0].strftime(
+        date_horizon = self.get_warehouse().get_horizon_date().strftime(
             DEFAULT_SERVER_DATETIME_FORMAT)
         counts_planned = self.env['stock.cycle.count'].search([
             ('date_deadline', '<', date_horizon), ('state', '=', 'draft'),
