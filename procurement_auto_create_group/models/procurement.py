@@ -19,7 +19,7 @@ class ProcurementOrder(models.Model):
             'name': name
         }
 
-    @api.model
+    @api.multi
     def _assign(self):
         res = super(ProcurementOrder, self)._assign()
         if (self.rule_id and not self.group_id and
