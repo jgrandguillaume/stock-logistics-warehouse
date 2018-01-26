@@ -1,27 +1,28 @@
 # -*- coding: utf-8 -*-
-# © 2016 Eficent Business and IT Consulting Services S.L.
+# Copyright 2016-18 Eficent Business and IT Consulting Services S.L.
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
-from openerp import api, fields, models
-from openerp.addons import decimal_precision as dp
+
+from odoo import api, fields, models
+from odoo.addons import decimal_precision as dp
 import time
+
 UNIT = dp.get_precision('Account')
 
 
 class StockValuationAccountManualAdjustment(models.Model):
-
     _name = 'stock.valuation.account.manual.adjustment'
     _description = 'Stock Valuation Account Manual Adjustment'
 
     @api.model
     def _default_journal(self):
-        res = self.env['account.journal'].search([('type', '=', 'general')])
-        return res and res[0] or False
+        return self.env['account.journal'].search(
+            [('type', '=', 'general')], limit=1)
 
-    name = fields.Char('Reference',
-                       help="Reference for the journal entry",
-                       readonly=True,
-                       required=True, states={'draft': [('readonly', False)]},
-                       copy=False, default='/')
+    name = fields.Char(
+        string='Reference',
+        help="Reference for the journal entry", readonly=True,
+        required=True, states={'draft': [('readonly', False)]},
+        copy=False, default='/')
     product_id = fields.Many2one(
         comodel_name='product.product',
         string='Product',
@@ -46,37 +47,39 @@ class StockValuationAccountManualAdjustment(models.Model):
         comodel_name='account.account',
         string='Valuation Decrease Contra-Account',
         required=True, readonly=True, states={'draft': [('readonly', False)]})
-    journal_id = fields.Many2one('account.journal', 'Journal', readonly=True,
-                                 default=_default_journal, required=True,
-                                 states={'draft': [('readonly', False)]})
-    remarks = fields.Text('Remarks',
-                          help="This text is copied to the journal entry.",
-                          required=True, readonly=True,
-                          states={'draft': [('readonly', False)]})
-    state = fields.Selection(selection=[('draft', 'Draft'),
-                                        ('posted', 'Posted')], string='Status',
-                             required=True, default='draft',
-                             states={'draft': [('readonly', False)]})
-    amount = fields.Float(string="Adjustment amount", digits=UNIT,
-                          readonly=True, required=True,
-                          states={'done': [('readonly', False)]})
+    journal_id = fields.Many2one(
+        comodel_name='account.journal', string='Journal', readonly=True,
+        default=_default_journal, required=True,
+        states={'draft': [('readonly', False)]})
+    remarks = fields.Text(
+        string='Remarks',
+        help="This text is copied to the journal entry.",
+        required=True, readonly=True,
+        states={'draft': [('readonly', False)]})
+    state = fields.Selection(
+        string='Status', selection=[('draft', 'Draft'), ('posted', 'Posted')],
+        required=True, default='draft', readonly=False)
+    amount = fields.Float(
+        string="Adjustment amount", digits=UNIT,
+        readonly=True, required=True,
+        states={'done': [('readonly', False)]})
     document_date = fields.Date(
-        'Creation date', required=True, readonly=True,
+        string='Creation date', required=True, readonly=True,
         default=lambda self: fields.Date.context_today(self),
         states={'draft': [('readonly', False)]})
-    user_id = fields.Many2one('res.users', 'Created by',
-                              readonly=True,
-                              states={'draft': [('readonly', False)]},
-                              default=lambda self: self.env.user)
+    user_id = fields.Many2one(
+        comodel_name='res.users',
+        string='Created by', readonly=True,
+        states={'draft': [('readonly', False)]},
+        default=lambda self: self.env.user)
     post_date = fields.Datetime(
-        'Posting Date', readonly=True, states={'draft': [('readonly', False)]},
+        string='Posting Date', readonly=True,
+        states={'draft': [('readonly', False)]},
         help="Date of actual processing")
-
     account_move_ids = fields.One2many(
         comodel_name='account.move',
         inverse_name='stock_valuation_account_manual_adjustment_id',
         readonly=True)
-
     company_id = fields.Many2one(
         comodel_name='res.company', string='Company', readonly=True,
         default=lambda self: self.env['res.company']._company_default_get(
@@ -98,12 +101,11 @@ class StockValuationAccountManualAdjustment(models.Model):
                 self.product_id.categ_id.\
                 property_inventory_revaluation_decrease_account_categ
 
-    @api.model
     def _prepare_move_data(self, date_move, debit_move_line_data,
                            credit_move_line_data):
+        self.ensure_one()
         line_data = ([(0, 0, debit_move_line_data)] +
                      [(0, 0, credit_move_line_data)])
-
         return {
             'narration': self.remarks,
             'date': date_move,
@@ -113,9 +115,9 @@ class StockValuationAccountManualAdjustment(models.Model):
             'line_ids': line_data
         }
 
-    @api.model
     def _prepare_debit_move_line_data(self, amount, account_id, prod,
                                       date_move):
+        self.ensure_one()
         return {
             'name': '(%s) %s' % (self.name, prod.name),
             'date': date_move,
@@ -124,9 +126,9 @@ class StockValuationAccountManualAdjustment(models.Model):
             'debit': amount
         }
 
-    @api.model
     def _prepare_credit_move_line_data(self, amount, account_id,
                                        prod, date_move):
+        self.ensure_one()
         return {
             'name': '(%s) %s' % (self.name, prod.name),
             'date': date_move,

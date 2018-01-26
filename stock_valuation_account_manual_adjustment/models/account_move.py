@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-# © 2016 Eficent Business and IT Consulting Services S.L.
+# Copyright 2016-18 Eficent Business and IT Consulting Services S.L.
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
-from openerp import api, exceptions, fields, models, _
+
+from odoo import api, exceptions, fields, models, _
 
 
 class AccountMove(models.Model):
-
     _inherit = 'account.move'
 
     stock_valuation_account_manual_adjustment_id = fields.Many2one(
@@ -24,7 +24,6 @@ class AccountMove(models.Model):
 
 
 class AccountMoveLine(models.Model):
-
     _inherit = 'account.move.line'
 
     stock_valuation_account_manual_adjustment_id = fields.Many2one(

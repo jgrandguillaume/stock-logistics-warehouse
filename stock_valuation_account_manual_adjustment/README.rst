@@ -22,7 +22,8 @@ Usage
 
 * Go to 'Inventory / Inventory Control / Perpetual Inventory Valuation'
 
-* Filter on 'Valuation Discrepancy != 0.0' using the advanced filter.
+* Filter using the filter 'Valuation Discrepancy' which filters out
+  products with no Valuation Discrepancy.
 
 * Select the products that you wish to reconcile and press 'Action /
   Adjust Stock Valuation Account Discrepancies'.
@@ -54,7 +55,7 @@ Known issues / Roadmap
 
 .. image:: https://odoo-community.org/website/image/ir.attachment/5784_f2813bd/datas
    :alt: Try me on Runbot
-   :target: https://runbot.odoo-community.org/runbot/154/9.0
+   :target: https://runbot.odoo-community.org/runbot/154/10.0
 
 Bug Tracker
 ===========
@@ -78,6 +79,7 @@ Contributors
 ------------
 
 * Jordi Ballester Alomar <jordi.ballester@eficent.com>
+* Lois Rilo Antelo <lois.rilo@eficent.com>
 
 
 Maintainer
